@@ -192,6 +192,10 @@ write_conf() {
     addons_path="$SERVERS_DIR,$ENTERPRISE_DIR,$COMMUNITY_DIR/addons,$COMMUNITY_DIR/odoo/addons"
   fi
 
+  # db_host/db_port/db_password are intentionally omitted: Odoo 19's config
+  # parser casts db_port through int() when the key is present in the file
+  # at all, so an empty value ("db_port =") raises ValueError instead of
+  # falling back to peer auth over the local unix socket.
   cat > "$CONF_FILE" <<EOF
 [options]
 addons_path = $addons_path
@@ -199,10 +203,7 @@ data_dir = $DATA_DIR
 logfile = $LOGS_DIR/odoo.log
 admin_passwd = $MASTER_PASSWORD
 http_port = $HTTP_PORT
-db_host =
-db_port =
 db_user = $PG_ROLE
-db_password =
 EOF
 }
 
