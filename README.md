@@ -136,7 +136,6 @@ machine it was written on). Three real issues came up along the way:
   without a configured key, and the script continues without Helpdesk. Not
   a bug in the script, but worth calling out since it fails quietly.
 
-## Notes / license
+## License
 
-No license file yet — happy to add MIT if you want to reuse or build on
-this.
+[MIT](LICENSE)
