@@ -22,7 +22,8 @@
 #   SKIP_APT=1 ./install_odoo19.sh             # system packages already installed
 #   SKIP_DB=1 ./install_odoo19.sh              # skip database creation / module install
 #
-# Prerequisites you get from Victor before running this:
+# Prerequisites you get from whoever manages repo access on your team, before
+# running this:
 #   - Your GitHub account added as a collaborator on odoo/enterprise (private repo)
 #   - Either an SSH key loaded for that account (default below), or a GitHub PAT —
 #     set ENTERPRISE_REPO to https://<TOKEN>@github.com/odoo/enterprise in that case.
@@ -136,9 +137,10 @@ clone_or_update() {
       err "Could not clone $label from $url."
       if [ "$label" = "enterprise" ]; then
         err "This is almost always a permissions issue on the private odoo/enterprise repo."
-        err "Ask Victor to add your GitHub account as a collaborator, and make sure your"
-        err "SSH key is loaded (ssh-add -l / ssh -T git@github.com), or set ENTERPRISE_REPO"
-        err "to an https://<TOKEN>@github.com/odoo/enterprise URL if you're using a PAT."
+        err "Ask whoever manages repo access to add your GitHub account as a collaborator,"
+        err "and make sure your SSH key is loaded (ssh-add -l / ssh -T git@github.com), or"
+        err "set ENTERPRISE_REPO to an https://<TOKEN>@github.com/odoo/enterprise URL if"
+        err "you're using a PAT."
       fi
       return 1
     fi
