@@ -1,19 +1,24 @@
 # Odoo 19 Enterprise — local dev install
 
+*Written while onboarding as an Odoo developer intern — automates the
+from-source dev environment setup my team uses, so a new machine/user can go
+from a blank Ubuntu account to a running Odoo 19 Enterprise instance in one
+command.*
+
 `install_odoo19.sh` sets up a from-source Odoo 19 Enterprise development
 environment for a single user, following the team's folder convention, ready
 to open in PyCharm with a working run/debug configuration out of the box.
 
 ## What you need first
 
-Ask **Victor** for access to the private `odoo/enterprise` repo, either:
+Access to the private `odoo/enterprise` repo, granted by whoever manages
+repository access on your team. Either:
 - an SSH key for a GitHub account that has that access (default — the
   script clones enterprise over SSH), or
-- a `git clone` command with a GitHub Personal Access Token embedded (what
-  Victor typically sends) — set `ENTERPRISE_REPO` to that same
-  `https://<TOKEN>@github.com/odoo/enterprise` URL before running. The
-  script strips the token out of the stored git remote right after cloning,
-  so it doesn't sit in `.git/config` in plain text afterwards.
+- a Personal Access Token — set `ENTERPRISE_REPO` to
+  `https://<TOKEN>@github.com/odoo/enterprise` before running. The script
+  strips the token out of the stored git remote right after cloning, so it
+  doesn't sit in `.git/config` in plain text afterwards.
 
 If using SSH, verify access works before running the script:
 
@@ -62,6 +67,12 @@ ssh -T git@github.com
 ./install_odoo19.sh
 ```
 
+With enterprise access via a token (the common case on a fresh machine):
+
+```
+ENTERPRISE_REPO='https://<TOKEN>@github.com/odoo/enterprise' ./install_odoo19.sh
+```
+
 Useful overrides (env vars, all optional):
 
 | Variable              | Default                                | Meaning |
@@ -99,3 +110,33 @@ and the **"Odoo 19 (odoo-bin)"** run/debug configuration are already wired up
 
 Then open http://localhost:8069. The master password printed at the end of
 the script is needed the first time you create/manage a database.
+
+## Bugs found while building and testing this
+
+Verified end-to-end on a real, fresh Ubuntu user account (not just the dev
+machine it was written on). Three real issues came up along the way:
+
+- **PyCharm run configuration — `ValueError: embedded null byte`.** The
+  "Paths to .env files" field (`ENV_FILES`) is easy to confuse with the
+  interpreter field. Pointing it at the venv's `python` binary makes
+  PyCharm try to parse the binary as a text `.env` file, which crashes
+  `debugpy` on launch with that exact error. Fix: the generated run
+  configuration never sets `ENV_FILES` at all — the interpreter is wired
+  via `SDK_HOME` instead, so this can't happen.
+- **Odoo 19 config parsing — `ValueError: invalid literal for int() with base 10: ''`.**
+  Writing `db_port =` (empty) into `odoo.conf` still crashed on database
+  init: Odoo 19 casts `db_port` through `int()` whenever the key is present
+  at all, empty or not. Fix: omit `db_host`/`db_port`/`db_password` from the
+  file entirely instead of leaving them blank — Odoo then falls back to
+  peer auth over the local socket as intended.
+- **Silent failure from a bash scoping gotcha.** Setting
+  `ENTERPRISE_REPO='...'` on its own line before calling the script (instead
+  of on the same line) doesn't export it to the script's environment — the
+  enterprise clone then silently falls back to the SSH default, fails
+  without a configured key, and the script continues without Helpdesk. Not
+  a bug in the script, but worth calling out since it fails quietly.
+
+## Notes / license
+
+No license file yet — happy to add MIT if you want to reuse or build on
+this.
