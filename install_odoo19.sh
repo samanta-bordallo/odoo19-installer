@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # install_odoo19.sh — set up an Odoo 19 Enterprise dev environment from source,
-# following the team's folder convention (Config / Enterprise / Odoo19 / Servers).
+# using a fixed folder layout (Config / Enterprise / Odoo19 / Servers).
 #
 # Creates, by default, in ~/Odoo19:
 #   Config/                 odoo.conf
@@ -9,7 +9,7 @@
 #     repo_odoo_enterprise_19/   odoo/enterprise, branch 19.0
 #   Odoo19/
 #     repo_odoo_community_19/    odoo/odoo, branch 19.0
-#   Servers/                 empty — client-specific custom addons go here
+#   Servers/                 empty — custom addons go here
 #   venv/                    Python virtualenv with all deps
 #   data/                    filestore / sessions
 #   logs/                    odoo.log
@@ -22,7 +22,7 @@
 #   SKIP_APT=1 ./install_odoo19.sh             # system packages already installed
 #   SKIP_DB=1 ./install_odoo19.sh              # skip database creation / module install
 #
-# Prerequisites you get from whoever manages repo access on your team, before
+# Prerequisites to have in place before
 # running this:
 #   - Your GitHub account added as a collaborator on odoo/enterprise (private repo)
 #   - Either an SSH key loaded for that account (default below), or a GitHub PAT —
